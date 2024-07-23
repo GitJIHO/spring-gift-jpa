@@ -6,11 +6,13 @@ import gift.entity.User;
 import gift.entity.Wish;
 import gift.exception.ProductNotFoundException;
 import gift.exception.UserAuthException;
+import gift.exception.WishNotFoundException;
 import gift.repository.ProductRepository;
 import gift.repository.UserRepository;
 import gift.repository.WishRepository;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +30,7 @@ public class WishService {
         this.userRepository = userRepository;
     }
 
-    public void addWish(Long userId, WishRequest request) {
+    public Wish addWish(Long userId, WishRequest request) {
         Product product = productRepository.findById(request.getProductId())
             .orElseThrow(() -> new ProductNotFoundException("product가 없습니다."));
 
@@ -37,14 +39,16 @@ public class WishService {
 
         Wish wish = new Wish(user, product, request.getNumber());
         wishRepository.save(wish);
+        return wish;
     }
 
-    public List<Wish> getWishes(Long userId) {
-        return wishRepository.findByUserId(userId);
+    public Page<Wish> getWishes(Long userId, Pageable pageable) {
+        return wishRepository.findByUserId(userId, pageable);
     }
 
     public Wish getOneWish(Long userId, Long wishId) {
-        return wishRepository.findByUserIdAndId(userId, wishId);
+        return wishRepository.findByUserIdAndId(userId, wishId)
+            .orElseThrow(() -> new WishNotFoundException("위시 리스트가 없습니다."));
     }
 
     public void removeWish(Long userId, Long wishId) {

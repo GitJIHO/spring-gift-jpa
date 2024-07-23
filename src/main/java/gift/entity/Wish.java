@@ -18,11 +18,11 @@ public class Wish {
     private Long id;
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "product_id")
     private Product product;
     @NotNull
     private int number;
@@ -40,18 +40,6 @@ public class Wish {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public Product getProduct() {
         return product;
     }
@@ -62,9 +50,5 @@ public class Wish {
 
     public int getNumber() {
         return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
     }
 }

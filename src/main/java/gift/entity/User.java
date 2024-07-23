@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,15 +24,9 @@ public class User {
     @NotNull
     private String password;
     @OneToMany(mappedBy = "user")
-    private List<Wish> wishes;
+    private List<Wish> wishes = new ArrayList<>();
 
     public User() {
-    }
-
-    public User(Long id, String email, String password) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
     }
 
     public User(String email, String password) {
@@ -43,24 +38,12 @@ public class User {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public boolean samePassword(String password) {

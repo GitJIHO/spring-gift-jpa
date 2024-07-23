@@ -1,9 +1,15 @@
 package gift.controller;
 
+import gift.dto.ProductRequest;
 import gift.entity.Product;
 import gift.service.ProductService;
 import jakarta.validation.Valid;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,8 +30,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getProduct() {
-        return productService.getAllProducts();
+    public Page<Product> getProduct(@PageableDefault(sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return productService.getAllProducts(pageable);
     }
 
     @GetMapping("/{id}")
@@ -34,22 +40,22 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product addProduct(@Valid @RequestBody Product product) {
-        productService.saveProduct(product);
-        return product;
+    public ResponseEntity<Product> addProduct(@Valid @RequestBody ProductRequest productRequest) {
+        Product product = productService.saveProduct(productRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @PutMapping("/{id}")
-    public Product changeProduct(@PathVariable("id") Long id, @Valid @RequestBody Product product) {
-        productService.getProductById(id);
-        product.setId(id);
-        productService.saveProduct(product);
-        return product;
+    public ResponseEntity<Product> changeProduct(@PathVariable("id") Long id,
+        @Valid @RequestBody ProductRequest productRequest) {
+        Product product = productService.updateProduct(id, productRequest);
+        return ResponseEntity.ok(product);
     }
 
     @DeleteMapping("/{id}")
-    public void removeProduct(@PathVariable("id") Long id) {
+    public ResponseEntity<String> removeProduct(@PathVariable("id") Long id) {
         productService.getProductById(id);
         productService.deleteProduct(id);
+        return ResponseEntity.ok("삭제되었습니다.");
     }
 }

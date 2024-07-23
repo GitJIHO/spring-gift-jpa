@@ -1,9 +1,11 @@
 package gift.service;
 
-import gift.repository.ProductRepository;
+import gift.dto.ProductRequest;
 import gift.entity.Product;
 import gift.exception.ProductNotFoundException;
-import java.util.List;
+import gift.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,20 +17,27 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     public Product getProductById(Long id) {
-        try {
-            return productRepository.findById(id).orElse(null);
-        } catch (Exception e) {
-            throw new ProductNotFoundException("해당 id를 가지고있는 Product 객체가 없습니다.");
-        }
+        return productRepository.findById(id)
+            .orElseThrow(() -> new ProductNotFoundException("해당 id를 가지고있는 Product 객체가 없습니다."));
     }
 
-    public void saveProduct(Product product) {
+    public Product saveProduct(ProductRequest productRequest) {
+        Product product = new Product(productRequest.getName(), productRequest.getPrice(),
+            productRequest.getImg());
         productRepository.save(product);
+        return product;
+    }
+
+    public Product updateProduct(Long id, ProductRequest productRequest) {
+        Product product = new Product(id, productRequest.getName(), productRequest.getPrice(),
+            productRequest.getImg());
+        productRepository.save(product);
+        return product;
     }
 
     public void deleteProduct(Long id) {
